@@ -6,10 +6,7 @@ import asyncio
 async def blink(canvas, row, column, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
-        # прерывает исполнение и дает управление родительсокму потоку (типа ретерна)
-        # каждый раз при запуске корутины она будет продолжать работу с места последнего await
-        # - чстой воды генератор, где await == yield, но возвращает не итерируемый объект а управление потоком
-        await asyncio.sleep(0) # дай поработать другим
+        await asyncio.sleep(0) 
 
         canvas.addstr(row, column, symbol)
         await asyncio.sleep(0)
@@ -21,30 +18,21 @@ async def blink(canvas, row, column, symbol='*'):
         await asyncio.sleep(0)
 
 
-
-
 def draw(canvas):
     row, column = (5, 20)
     curses.curs_set(False)
     canvas.border()
     
-    star = blink(canvas, row, column)
-
-    star.send(None)
+    coroutines = [blink(canvas, row, column + j) for j in range(5)]
     canvas.refresh()
-    time.sleep(2)
 
-    star.send(None)
-    canvas.refresh()
-    time.sleep(0.3)
+    while True:
+        canvas.refresh()
+        for coroutine in coroutines:
+            coroutine.send(None)
+            #canvas.refresh()
+        time.sleep(1)	
 
-    star.send(None)
-    canvas.refresh()
-    time.sleep(0.5)
-
-    star.send(None)
-    canvas.refresh()
-    time.sleep(0.3)
 
 
 def blinking_star():
