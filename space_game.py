@@ -4,17 +4,26 @@ import time
 
 def draw(canvas):
     row, column = (5, 20)
-    canvas.border()
-    # no blinking cursor
     curses.curs_set(False)
-    
+    canvas.border()
+
+    while (True):
     # adds string on (x,y) = (row, column)
-    canvas.addstr(row, column, 'Hello World')
+        canvas.addstr(row, column, '*', curses.A_DIM)
+        canvas.refresh()
+        time.sleep(2)
 
-    # make the string appear on the screen
-    canvas.refresh()
+        canvas.addstr(row, column, '*')
+        canvas.refresh()
+        time.sleep(0.3)
 
-    time.sleep(3)
+        canvas.addstr(row, column, '*', curses.A_BOLD)
+        canvas.refresh()
+        time.sleep(0.5)
+
+        canvas.addstr(row, column, '*')
+        canvas.refresh()
+        time.sleep(0.3)
 
 
 if __name__ == '__main__':
