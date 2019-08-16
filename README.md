@@ -1,5 +1,5 @@
-# dvmn_space_game
-Python game using async.
+# SPACE GAME
+Part of dvmn.org async course!
 
 ## Description
 
