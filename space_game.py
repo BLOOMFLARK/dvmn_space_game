@@ -44,15 +44,49 @@ def draw(canvas):
         column = random.randint(1, max_x - 1)
         coroutines.append(blink(canvas, row, column, symbol=star))
 
+    rocket = fire(canvas, round(max_y / 2), round(max_x / 2))    
     canvas.refresh()
 
     while True:
-    	time.sleep(TIC_TIMEOUT)
-    	canvas.refresh()
-    	for coroutine in coroutines:
+        time.sleep(TIC_TIMEOUT)
+        canvas.refresh()
+        for coroutine in coroutines:
             coroutine.send(None)
-            canvas.refresh()	
+            canvas.refresh()
 
+        try:
+            rocket.send(None)
+        except StopIteration:
+            break   
+
+
+
+async def fire(canvas, start_row, start_column, rows_speed=-0.3,  columns_speed=0):
+    row, column = start_row, start_column, 
+
+    canvas.addstr(round(row), round(column), '*')
+    await asyncio.sleep(0)
+
+    canvas.addstr(round(row), round(column), 'O')
+    await asyncio.sleep(0)
+    canvas.addstr(round(row), round(column), ' ')
+
+    row += rows_speed
+    column += columns_speed
+
+    symbol = '-' if columns_speed else '|'
+
+    rows, columns = canvas.getmaxyx()
+    max_row, max_column = rows - 1, columns - 1
+
+    curses.beep()
+
+    while 0 < row < max_row and 0 < column < max_column:
+        canvas.addstr(round(row), round(column), symbol)
+        await asyncio.sleep(0)
+        canvas.addstr(round(row), round(column), ' ')
+        row += rows_speed
+        column += columns_speed
 
 
 def blinking_star():
