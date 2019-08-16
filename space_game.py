@@ -5,115 +5,9 @@ import random
 from curses_tools import draw_frame, read_controls, get_frame_size
 
 
-async def blink(canvas, row, column, symbol='*'):
-    latency = random.randint(0, 100)
-    while True:
-        canvas.addstr(row, column, symbol, curses.A_DIM)
-        latency = random.randint(0, 1)
-        for _ in range(20):
-            await asyncio.sleep(0) 
-
-        for _ in range(latency):
-            await asyncio.sleep(0)	
-           
-        canvas.addstr(row, column, symbol)
-        for _ in range(3):
-            await asyncio.sleep(0)
-
-        canvas.addstr(row, column, symbol, curses.A_BOLD)
-        for _ in range(5):
-            await asyncio.sleep(0)
-
-        canvas.addstr(row, column, symbol)
-        for _ in range(3):
-            await asyncio.sleep(0)
-
-
-async def animate_spaceship(canvas, row, column):
-    # with open("rocket_frame_1.txt") as file1:
-	    # frame1 = file1.read()
-
-    # with open("rocket_frame_2.txt") as file1:
-        # frame2 = file2.read()
-
-    frame1 = """  .
- .'.
- |o|
-.'o'.
-|.-.|
-'   '
- ( )
-  )
- ( )"""
-    frame2 = """  .
- .'.
- |o|
-.'o'.
-|.-.|
-'   '
-  )
- ( )
-  ("""
-    frame_rows, frame_columns = get_frame_size(frame1)
-    max_row, max_column = canvas.getmaxyx()
-    while True:
-        rows_direction, columns_direction, space_pressed = read_controls(canvas)
-        
-        if row + rows_direction + frame_rows < max_row and -1 < row + rows_direction:
-            row += rows_direction
-        if column + columns_direction + frame_columns < max_column and 0 < column + columns_direction:
-            column += columns_direction    
-
-        
-        draw_frame(canvas, row, column, frame1)
-        canvas.refresh()  
-        await asyncio.sleep(0)
-
-        draw_frame(canvas, row, column, frame1, negative=True)
-        draw_frame(canvas, row, column, frame2)
-        canvas.refresh()  
-        for _ in range(2):
-            await asyncio.sleep(0)
-
-        draw_frame(canvas, row, column, frame2, negative=True)
-
-
-
-def draw(canvas):
-    stars = '+*.:'
-    TIC_TIMEOUT = 0.1
-    curses.curs_set(False)
-    canvas.border()
-    canvas.nodelay(True)
-
-    max_y, max_x = canvas.getmaxyx()
-    num_of_stars = random.randint(100, 200)
-    
-    coroutines = []
-    for _ in range(num_of_stars):
-        star = random.choice(stars)
-        row = random.randint(1, max_y - 2)
-        column = random.randint(1, max_x - 2)
-        coroutines.append(blink(canvas, row, column, symbol=star))
-
-    blast = fire(canvas, round(max_y / 2), round(max_x / 2))
-    rocket = animate_spaceship(canvas, round(max_y / 2), round(max_x / 2)) 
-
-    while True:
-        time.sleep(TIC_TIMEOUT)
-        canvas.refresh()
-        for coroutine in coroutines:
-            coroutine.send(None)
-            canvas.refresh()
-
-        rocket.send(None)
-
-        try:
-            blast.send(None)
-        except StopIteration:
-            break   
-
-
+STARS = '+*.:'
+TIC_TIMEOUT = 0.1
+NUM_OF_STARS = random.randint(100, 200)
 
 async def fire(canvas, start_row, start_column, rows_speed=-0.05,  columns_speed=0):
     row, column = start_row, start_column, 
@@ -143,24 +37,120 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.05,  columns_speed
         column += columns_speed
 
 
-def blinking_star():
-    while (True):
-    # adds string on (x,y) = (row, column)
-        canvas.addstr(row, column, '*', curses.A_DIM)
-        canvas.refresh()
-        time.sleep(2)
+def ship_inside_border(current_coordinate, step, frame_size, border) -> bool:
+    """ Checks if frame does not exceed border limit in 1 Dimension! """
+    if current_coordinate + step + frame_size < border and 0 < current_coordinate + step:
+        return True
+    return False
 
-        canvas.addstr(row, column, '*')
-        canvas.refresh()
-        time.sleep(0.3)
 
-        canvas.addstr(row, column, '*', curses.A_BOLD)
-        canvas.refresh()
-        time.sleep(0.5)
+async def animate_spaceship(canvas, row, column):
+    # with open("rocket_frame_1.txt") as file1:
+        # frame1 = file1.read()
 
-        canvas.addstr(row, column, '*')
+    # with open("rocket_frame_2.txt") as file1:
+        # frame2 = file2.read()
+
+    frame1 = """
+  .
+ .'.
+ |o|
+.'o'.
+|.-.|
+'   '
+ ( )
+  )
+ ( )"""
+    frame2 = """
+  .
+ .'.
+ |o|
+.'o'.
+|.-.|
+'   '
+  )
+ ( )
+  ("""
+
+    frame_rows, frame_columns = get_frame_size(frame1)
+    max_row, max_column = canvas.getmaxyx()
+
+    while True:
+        rows_direction, columns_direction, space_pressed = read_controls(canvas)
+
+        if ship_inside_border(current_coordinate=row, step=rows_direction, frame_size=frame_rows, border=max_row):
+           row += rows_direction
+        if ship_inside_border(current_coordinate=column, step=rows_direction, frame_size=frame_columns, border=max_column):
+           column += columns_direction     
+
+        draw_frame(canvas, row, column, frame1)
+        canvas.refresh()  
+
+        await asyncio.sleep(0)
+
+        draw_frame(canvas, row, column, frame1, negative=True)
+        draw_frame(canvas, row, column, frame2)
+        canvas.refresh()  
+
+        await asyncio.sleep(0)
+
+        draw_frame(canvas, row, column, frame2, negative=True)
+
+
+async def blink(canvas, row, column, symbol='*'):
+    latency = random.randint(0, 100)
+    while True:
+        canvas.addstr(row, column, symbol, curses.A_DIM)
+
+        for _ in range(latency):
+            await asyncio.sleep(0)
+           
+        canvas.addstr(row, column, symbol)
+        for _ in range(3):
+            await asyncio.sleep(0)
+
+        canvas.addstr(row, column, symbol, curses.A_BOLD)
+        for _ in range(5):
+            await asyncio.sleep(0)
+
+        canvas.addstr(row, column, symbol)
+        for _ in range(3):
+            await asyncio.sleep(0)
+
+
+def draw(canvas):
+    curses.curs_set(False)
+
+    canvas.border()
+    canvas.nodelay(True)
+
+    max_y, max_x = canvas.getmaxyx()
+    center_y, center_x = (round(max_y / 2), round(max_x / 2))
+    
+    coroutines_stars = []
+    for _ in range(NUM_OF_STARS):
+        star = random.choice(STARS)
+        row = random.randint(1, max_y - 2)
+        column = random.randint(1, max_x - 2)
+        coroutines_stars.append(blink(canvas, row, column, symbol=star))
+
+        
+    #blast = fire(canvas, center_y, center_x)
+    rocket = animate_spaceship(canvas, center_y, center_x)
+
+    while True:
+        time.sleep(TIC_TIMEOUT)
         canvas.refresh()
-        time.sleep(0.3)    
+        for coroutine in coroutines_stars:
+            coroutine.send(None)
+            canvas.refresh()
+
+        rocket.send(None)
+
+        #try:
+        #    blast.send(None)
+        #except StopIteration:
+        #    break    
 
 
 if __name__ == '__main__':
