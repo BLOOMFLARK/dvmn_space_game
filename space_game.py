@@ -2,6 +2,7 @@ import curses
 import time
 import asyncio
 import random
+from curses_tools import draw_frame
 
 
 async def blink(canvas, row, column, symbol='*'):
@@ -28,6 +29,43 @@ async def blink(canvas, row, column, symbol='*'):
             await asyncio.sleep(0)
 
 
+async def animate_spaceship(canvas, row, column):
+    # with open("rocket_frame_1.txt") as file1:
+	    # frame1 = file1.read()
+
+    # with open("rocket_frame_2.txt") as file1:
+        # frame2 = file2.read()
+
+    frame1 = """  .
+ .'.
+ |o|
+.'o'.
+|.-.|
+'   '
+ ( )
+  )
+ ( )"""
+    frame2 = """  .
+ .'.
+ |o|
+.'o'.
+|.-.|
+'   '
+  )
+ ( )
+  ("""        
+    while True:
+        draw_frame(canvas, row, column, frame1)
+        await asyncio.sleep(0)
+
+        draw_frame(canvas, row, column, frame1, negative=True)
+        draw_frame(canvas, row, column, frame2)
+        await asyncio.sleep(0)
+
+        draw_frame(canvas, row, column, frame2, negative=True)
+
+
+
 def draw(canvas):
     stars = '+*.:'
     TIC_TIMEOUT = 0.1
@@ -44,7 +82,8 @@ def draw(canvas):
         column = random.randint(1, max_x - 1)
         coroutines.append(blink(canvas, row, column, symbol=star))
 
-    rocket = fire(canvas, round(max_y / 2), round(max_x / 2))    
+    blast = fire(canvas, round(max_y / 2), round(max_x / 2))
+    rocket = animate_spaceship(canvas, round(max_y / 2), round(max_x / 2)) 
     canvas.refresh()
 
     while True:
@@ -54,8 +93,9 @@ def draw(canvas):
             coroutine.send(None)
             canvas.refresh()
 
+        rocket.send(None)    
         try:
-            rocket.send(None)
+            blast.send(None)
         except StopIteration:
             break   
 
