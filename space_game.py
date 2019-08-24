@@ -45,12 +45,6 @@ def ship_inside_border(current_coordinate, step, frame_size, border) -> bool:
 
 
 async def animate_spaceship(canvas, row, column):
-    # with open("rocket_frame_1.txt") as file1:
-        # frame1 = file1.read()
-
-    # with open("rocket_frame_2.txt") as file1:
-        # frame2 = file2.read()
-
     frame1 = """
   .
  .'.
