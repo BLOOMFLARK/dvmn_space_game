@@ -45,38 +45,22 @@ def ship_inside_border(current_coordinate, step, frame_size, border) -> bool:
 
 
 async def animate_spaceship(canvas, row, column):
-    frame1 = """
-  .
- .'.
- |o|
-.'o'.
-|.-.|
-'   '
- ( )
-  )
- ( )"""
-    frame2 = """
-  .
- .'.
- |o|
-.'o'.
-|.-.|
-'   '
-  )
- ( )
-  ("""
+    with open("/Users/mac/git_projects/dvmn_space_game/frames/rocket_frame_1.txt") as file1:
+        frame1 = file1.read()
+
+    with open("/Users/mac/git_projects/dvmn_space_game/frames/rocket_frame_2.txt") as file2:
+        frame2 = file2.read()
 
     frame_rows, frame_columns = get_frame_size(frame1)
+
     max_row, max_column = canvas.getmaxyx()
 
     while True:
         rows_direction, columns_direction, space_pressed = read_controls(canvas)
-
         if ship_inside_border(current_coordinate=row, step=rows_direction, frame_size=frame_rows, border=max_row):
-           row += rows_direction
-        if ship_inside_border(current_coordinate=column, step=rows_direction, frame_size=frame_columns, border=max_column):
-           column += columns_direction     
-
+            row += rows_direction
+        if ship_inside_border(current_coordinate=column, step=columns_direction, frame_size=frame_columns, border=max_column):
+            column += columns_direction    
         draw_frame(canvas, row, column, frame1)
         canvas.refresh()  
 
