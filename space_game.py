@@ -119,7 +119,7 @@ def draw(canvas):
     canvas.nodelay(True)
 
     max_y, max_x = canvas.getmaxyx()
-    center_y, center_x = (round(max_y / 2), round(max_x / 2))
+    center_y, center_x = round(max_y / 2), round(max_x / 2)
     
     coroutines_stars = []
     for _ in range(NUM_OF_STARS):
