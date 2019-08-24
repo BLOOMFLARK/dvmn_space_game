@@ -134,8 +134,6 @@ def draw(canvas):
         column = random.randint(1, max_x - 2)
         coroutines_stars.append(blink(canvas, row, column, symbol=star))
 
-        
-    #blast = fire(canvas, center_y, center_x)
     rocket = animate_spaceship(canvas, center_y, center_x)
 
     while True:
@@ -146,12 +144,6 @@ def draw(canvas):
             canvas.refresh()
 
         rocket.send(None)
-
-        #try:
-        #    blast.send(None)
-        #except StopIteration:
-        #    break    
-
 
 if __name__ == '__main__':
     curses.update_lines_cols()
