@@ -119,7 +119,6 @@ def draw(canvas):
         canvas.refresh()
         for coroutine in coroutines_stars:
             coroutine.send(None)
-            canvas.refresh()
 
         rocket.send(None)
 
