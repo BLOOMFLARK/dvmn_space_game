@@ -37,7 +37,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.05,  columns_speed
         column += columns_speed
 
 
-def ship_inside_border(current_coordinate, step, frame_size, border) -> bool:
+def check_ship_inside_border(current_coordinate, step, frame_size, border) -> bool:
     """ Checks if frame does not exceed border limit in 1 Dimension! """
     if current_coordinate + step + frame_size < border and 0 < current_coordinate + step:
         return True
@@ -57,9 +57,9 @@ async def animate_spaceship(canvas, row, column):
 
     while True:
         rows_direction, columns_direction, space_pressed = read_controls(canvas)
-        if ship_inside_border(current_coordinate=row, step=rows_direction, frame_size=frame_rows, border=max_row):
+        if check_ship_inside_border(current_coordinate=row, step=rows_direction, frame_size=frame_rows, border=max_row):
             row += rows_direction
-        if ship_inside_border(current_coordinate=column, step=columns_direction, frame_size=frame_columns, border=max_column):
+        if check_ship_inside_border(current_coordinate=column, step=columns_direction, frame_size=frame_columns, border=max_column):
             column += columns_direction    
         draw_frame(canvas, row, column, frame1)
         canvas.refresh()  
@@ -75,7 +75,7 @@ async def animate_spaceship(canvas, row, column):
         draw_frame(canvas, row, column, frame2, negative=True)
 
 
-async def blink(canvas, row, column, symbol='*', offset_tics):
+async def blink(canvas, row, column, offset_tics, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
 
@@ -110,7 +110,7 @@ def draw(canvas):
         star = random.choice(STARS)
         row = random.randint(1, max_y - 2)
         column = random.randint(1, max_x - 2)
-        coroutines.append(blink(canvas, row, column, symbol=star, offset_tics))
+        coroutines.append(blink(canvas, row, column, symbol=star, offset_tics=offset_tics))
 
     rocket = animate_spaceship(canvas, center_y, center_x)
     coroutines.append(rocket)
