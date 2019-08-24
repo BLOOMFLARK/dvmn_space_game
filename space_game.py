@@ -105,22 +105,21 @@ def draw(canvas):
     max_y, max_x = canvas.getmaxyx()
     center_y, center_x = round(max_y / 2), round(max_x / 2)
     
-    coroutines_stars = []
+    coroutines = []
     for _ in range(NUM_OF_STARS):
         star = random.choice(STARS)
         row = random.randint(1, max_y - 2)
         column = random.randint(1, max_x - 2)
-        coroutines_stars.append(blink(canvas, row, column, symbol=star))
+        coroutines.append(blink(canvas, row, column, symbol=star))
 
     rocket = animate_spaceship(canvas, center_y, center_x)
+    coroutines.append(rocket)
 
     while True:
         time.sleep(TIC_TIMEOUT)
         canvas.refresh()
-        for coroutine in coroutines_stars:
+        for coroutine in coroutines:
             coroutine.send(None)
-
-        rocket.send(None)
 
 if __name__ == '__main__':
     curses.update_lines_cols()
