@@ -9,6 +9,7 @@ STARS = '+*.:'
 TIC_TIMEOUT = 0.1
 NUM_OF_STARS = random.randint(100, 200)
 
+
 async def fire(canvas, start_row, start_column, rows_speed=-0.05,  columns_speed=0):
     row, column = start_row, start_column, 
 
@@ -39,9 +40,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.05,  columns_speed
 
 def check_ship_inside_border(current_coordinate, step, frame_size, border) -> bool:
     """ Checks if frame does not exceed border limit in 1 Dimension! """
-    if current_coordinate + step + frame_size < border and 0 < current_coordinate + step:
-        return True
-    return False
+    return current_coordinate + step + frame_size < border and 0 < current_coordinate + step:
 
 
 async def animate_spaceship(canvas, row, column):
@@ -120,6 +119,7 @@ def draw(canvas):
         canvas.refresh()
         for coroutine in coroutines:
             coroutine.send(None)
+
 
 if __name__ == '__main__':
     curses.update_lines_cols()
