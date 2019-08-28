@@ -40,7 +40,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.05,  columns_speed
 
 def check_ship_inside_border(current_coordinate, step, frame_size, border) -> bool:
     """ Checks if frame does not exceed border limit in 1 Dimension! """
-    return current_coordinate + step + frame_size < border and 0 < current_coordinate + step:
+    return current_coordinate + step + frame_size < border and 0 < current_coordinate + step
 
 
 async def animate_spaceship(canvas, row, column):
@@ -112,11 +112,19 @@ def draw(canvas):
     rocket = animate_spaceship(canvas, center_y, center_x)
     coroutines.append(rocket)
 
+    blast = fire(canvas, center_y, center_x, rows_speed=-0.05,  columns_speed=0)
+    coroutines.append(blast)
+
     while True:
         time.sleep(TIC_TIMEOUT)
         canvas.refresh()
         for coroutine in coroutines:
-            coroutine.send(None)
+            try:
+                coroutine.send(None)
+            except StopIteration:
+                coroutines.remove(coroutine)
+        if len(coroutines) == 0:
+            break            
 
 
 if __name__ == '__main__':
