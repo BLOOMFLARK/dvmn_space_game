@@ -44,10 +44,10 @@ def check_ship_inside_border(current_coordinate, step, frame_size, border) -> bo
 
 
 async def animate_spaceship(canvas, row, column):
-    with open("/Users/mac/git_projects/dvmn_space_game/frames/rocket_frame_1.txt") as file1:
+    with open("frames/rocket_frame_1.txt") as file1:
         frame1 = file1.read()
 
-    with open("/Users/mac/git_projects/dvmn_space_game/frames/rocket_frame_2.txt") as file2:
+    with open("frames/rocket_frame_2.txt") as file2:
         frame2 = file2.read()
 
     frame_rows, frame_columns = get_frame_size(frame1)
