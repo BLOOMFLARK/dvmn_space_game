@@ -60,14 +60,12 @@ async def animate_spaceship(canvas, row, column):
             row += rows_direction
         if check_ship_inside_border(current_coordinate=column, step=columns_direction, frame_size=frame_columns, border=max_column):
             column += columns_direction    
-        draw_frame(canvas, row, column, frame1)
-        canvas.refresh()  
+        draw_frame(canvas, row, column, frame1)  
 
         await asyncio.sleep(0)
 
         draw_frame(canvas, row, column, frame1, negative=True)
-        draw_frame(canvas, row, column, frame2)
-        canvas.refresh()  
+        draw_frame(canvas, row, column, frame2)  
 
         await asyncio.sleep(0)
 
